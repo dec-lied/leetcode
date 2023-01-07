@@ -1,4 +1,4 @@
-use std::any::type_name;
+use std::{any::type_name, ops::{Deref, DerefMut}};
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct ListNode
@@ -59,16 +59,28 @@ pub fn merge_two_lists(list1: Option< Box<ListNode> >, list2: Option< Box<ListNo
     let mut l1: Option< Box<ListNode> > = list1;
     let mut l2: Option< Box<ListNode> > = list2;
 
-    let merged: Option< Box<ListNode> > = None;
+    let l1_tail: &mut Option< Box<ListNode> > = &mut l1;
+    let l2_tail: &mut Option< Box<ListNode> > = &mut l2;
 
-    match (l1, l2)
+    let mut merged: Option< Box<ListNode> > = None;
+    let m_tail: &mut Option< Box<ListNode> > = &mut merged;
+
+    while (*l1_tail).is_some() && (*l2_tail).is_some()
     {
-        (None, None) => return None,
-        (None, Some(l2)) => return Some(l2),
-        (Some(l1), None) => return Some(l1),
-        (Some(_), Some(_)) => {}
-    };
+        let l1_val = l1_tail.as_deref_mut().unwrap().deref().val;
+        let l2_val = l2_tail.as_deref_mut().unwrap().deref().val;
 
+        if l1_val > l2_val
+        {
+            m_tail.as_deref_mut().unwrap().deref_mut().val = l1_val;
+        }
+        else
+        {
+            m_tail.as_deref_mut().unwrap().deref_mut().val = l2_val;
+        }
+
+        l1_tail = &mut l1_tail.as_deref_mut().unwrap().deref().next;
+    }
 
     return merged;
 }
